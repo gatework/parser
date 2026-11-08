@@ -1,0 +1,43 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+                 │ builder-baseline.txt │          builder-final.txt          │
+                 │        sec/op        │    sec/op     vs base               │
+New/small                  1.307µ ± 30%   1.315µ ± 11%       ~ (p=0.669 n=10)
+New/short_lines            3.658m ± 59%   3.493m ± 13%       ~ (p=0.796 n=10)
+New/long_line              15.94m ± 23%   15.34m ± 10%       ~ (p=0.631 n=10)
+Read/small                 3.111µ ± 21%   2.924µ ± 17%       ~ (p=0.912 n=10)
+Read/short_lines           4.425m ± 17%   4.206m ± 13%       ~ (p=1.000 n=10)
+Read/long_line             19.75m ± 15%   19.06m ±  9%       ~ (p=0.971 n=10)
+geomean                    524.1µ         504.6µ        -3.72%
+
+                 │ builder-baseline.txt │           builder-final.txt           │
+                 │         B/s          │      B/s        vs base               │
+New/small                 750.8Mi ± 24%    742.8Mi ± 10%       ~ (p=0.684 n=10)
+New/short_lines           890.7Mi ± 37%    928.4Mi ± 11%       ~ (p=0.796 n=10)
+New/long_line            1005.6Mi ± 19%   1043.3Mi ±  9%       ~ (p=0.631 n=10)
+Read/small                316.3Mi ± 18%    334.0Mi ± 15%       ~ (p=0.912 n=10)
+Read/short_lines          734.9Mi ± 17%    771.0Mi ± 12%       ~ (p=1.000 n=10)
+Read/long_line            810.8Mi ± 18%    839.8Mi ±  9%       ~ (p=0.971 n=10)
+geomean                   708.7Mi          733.4Mi        +3.48%
+
+                 │ builder-baseline.txt │          builder-final.txt          │
+                 │         B/op         │     B/op      vs base               │
+New/small                  2.070Ki ± 0%   2.195Ki ± 0%  +6.04% (p=0.000 n=10)
+New/short_lines            8.013Mi ± 0%   8.013Mi ± 0%  +0.00% (p=0.000 n=10)
+New/long_line              32.09Ki ± 0%   32.21Ki ± 0%  +0.39% (p=0.000 n=10)
+Read/small                 34.07Ki ± 0%   35.20Ki ± 0%  +3.30% (p=0.000 n=10)
+Read/short_lines           24.95Mi ± 0%   24.98Mi ± 0%  +0.13% (p=0.000 n=10)
+Read/long_line             83.24Mi ± 0%   83.27Mi ± 0%  +0.04% (p=0.000 n=10)
+geomean                    585.9Ki        595.4Ki       +1.62%
+
+                 │ builder-baseline.txt │          builder-final.txt          │
+                 │      allocs/op       │  allocs/op   vs base                │
+New/small                    9.000 ± 0%   10.000 ± 0%  +11.11% (p=0.000 n=10)
+New/short_lines              33.00 ± 0%    34.00 ± 0%   +3.03% (p=0.000 n=10)
+New/long_line                3.000 ± 0%    4.000 ± 0%  +33.33% (p=0.000 n=10)
+Read/small                   10.00 ± 0%    12.00 ± 0%  +20.00% (p=0.000 n=10)
+Read/short_lines             51.00 ± 0%    53.00 ± 0%   +3.92% (p=0.000 n=10)
+Read/long_line               28.00 ± 0%    30.00 ± 0%   +7.14% (p=0.000 n=10)
+geomean                      15.28         17.21       +12.61%

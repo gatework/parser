@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.1
+
+2026-11-08
+
+Internal change only; exported API, errors, limits and cancellation behavior are unchanged.
+
+- `New` and `Read` share one ingestion path for limits, line indexing, digest and
+  cancellation, so both constructors apply the same rules by construction.
+
 ## v0.1.0
 
 2026-11-07

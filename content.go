@@ -11,8 +11,6 @@ import (
 	"strings"
 )
 
-const scanChunk = 32 << 10
-
 // ErrInvalidReader indicates a nil reader or an invalid read count.
 var ErrInvalidReader = errors.New("parser: invalid reader")
 
@@ -47,36 +45,14 @@ func New(text string, limits Limits) (*Content, error) {
 // NewWithContext is New with cooperative cancellation during indexing and
 // hashing. ctx must be non-nil. Cancellation returns nil Content and ctx.Err().
 func NewWithContext(ctx context.Context, text string, limits Limits) (*Content, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	limits, err := limits.normalized()
+	builder, err := newContentBuilder(ctx, limits)
 	if err != nil {
 		return nil, err
 	}
-	if len(text) > limits.MaxBytes {
-		return nil, &LimitError{Resource: "bytes", Limit: limits.MaxBytes, Observed: len(text)}
+	if err := builder.write(text); err != nil {
+		return nil, joinFailure(err, ctx.Err())
 	}
-
-	index := lineIndexer{ends: []int{}, maxLines: limits.MaxLines}
-	digest := sha256.New()
-	buf := make([]byte, min(len(text), scanChunk))
-	for start := 0; start < len(text); {
-		if err := ctx.Err(); err != nil {
-			return nil, err
-		}
-		n := copy(buf, text[start:])
-		if err := index.feed(text[start : start+n]); err != nil {
-			return nil, errors.Join(err, ctx.Err())
-		}
-		if _, err := digest.Write(buf[:n]); err != nil {
-			return nil, fmt.Errorf("parser: hash source: %w", err)
-		}
-		start += n
-	}
-	var sum [sha256.Size]byte
-	digest.Sum(sum[:0])
-	return finishContent(ctx, text, &index, sum)
+	return builder.finish(text)
 }
 
 // Read reads and indexes r through EOF. It reads at most
@@ -96,10 +72,7 @@ func Read(r io.Reader, limits Limits) (*Content, error) {
 // Concurrently observed limit, read and cancellation errors remain inspectable
 // through errors.Is/As. Every failure returns nil Content.
 func ReadWithContext(ctx context.Context, r io.Reader, limits Limits) (*Content, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	limits, err := limits.normalized()
+	builder, err := newContentBuilder(ctx, limits)
 	if err != nil {
 		return nil, err
 	}
@@ -108,57 +81,41 @@ func ReadWithContext(ctx context.Context, r io.Reader, limits Limits) (*Content,
 	}
 
 	var text strings.Builder
-	buf := make([]byte, min(scanChunk, limits.MaxBytes))
-	index := lineIndexer{ends: []int{}, maxLines: limits.MaxLines}
-	digest := sha256.New()
+	buf := make([]byte, min(scanChunk, builder.remaining()))
 	emptyReads := 0
 	for {
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
-		remaining := limits.MaxBytes - text.Len()
-		size := min(len(buf), remaining)
-		if size == 0 {
-			size = 1
-		}
+		// One byte past the limit detects an oversized source.
+		size := max(min(len(buf), builder.remaining()), 1)
 		n, readErr := r.Read(buf[:size])
-		ctxErr := ctx.Err()
 		failure := readFailure(readErr)
 		if n < 0 || n > size {
-			return nil, errors.Join(ErrInvalidReader, failure, ctxErr)
-		}
-		if n > remaining {
-			limitErr := &LimitError{Resource: "bytes", Limit: limits.MaxBytes, Observed: text.Len() + n}
-			return nil, errors.Join(limitErr, failure, ctxErr)
-		}
-		if ctxErr != nil {
-			return nil, errors.Join(ctxErr, failure)
+			return nil, joinFailure(ErrInvalidReader, failure, ctx.Err())
 		}
 		if n > 0 {
 			start := text.Len()
 			text.Write(buf[:n])
-			// Index the builder's owned bytes without copying the read buffer
+			// Ingest the builder's owned bytes without copying the read buffer
 			// into a temporary string for each chunk.
-			if err := index.feed(text.String()[start:]); err != nil {
-				return nil, errors.Join(err, failure, ctx.Err())
-			}
-			if _, err := digest.Write(buf[:n]); err != nil {
-				return nil, errors.Join(fmt.Errorf("parser: hash source: %w", err), failure, ctx.Err())
+			if err := builder.write(text.String()[start:]); err != nil {
+				return nil, joinFailure(err, failure, ctx.Err())
 			}
 			emptyReads = 0
+		} else if err := ctx.Err(); err != nil {
+			return nil, joinFailure(err, failure)
 		}
 		if failure != nil {
-			return nil, errors.Join(failure, ctx.Err())
+			return nil, joinFailure(failure, ctx.Err())
 		}
 		if readErr == io.EOF {
-			var sum [sha256.Size]byte
-			digest.Sum(sum[:0])
-			return finishContent(ctx, text.String(), &index, sum)
+			return builder.finish(text.String())
 		}
 		if n == 0 {
 			emptyReads++
 			if emptyReads >= 100 {
-				return nil, errors.Join(fmt.Errorf("parser: read source: %w", io.ErrNoProgress), ctx.Err())
+				return nil, joinFailure(fmt.Errorf("parser: read source: %w", io.ErrNoProgress), ctx.Err())
 			}
 		}
 	}
@@ -173,12 +130,20 @@ func readFailure(err error) error {
 	return fmt.Errorf("parser: read source: %w", err)
 }
 
-func finishContent(ctx context.Context, text string, index *lineIndexer, digest [sha256.Size]byte) (*Content, error) {
-	content := &Content{text: text, ends: index.finish(), digest: digest}
-	if err := ctx.Err(); err != nil {
-		return nil, err
+// joinFailure keeps every error observed at the same time inspectable through
+// errors.Is/As. It omits nil causes and causes err already contains, and
+// returns err itself when nothing else was observed.
+func joinFailure(err error, causes ...error) error {
+	errs := []error{err}
+	for _, cause := range causes {
+		if cause != nil && !errors.Is(err, cause) {
+			errs = append(errs, cause)
+		}
 	}
-	return content, nil
+	if len(errs) == 1 {
+		return err
+	}
+	return errors.Join(errs...)
 }
 
 // String returns the exact original source bytes.

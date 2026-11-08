@@ -8,7 +8,7 @@
 ## 安装
 
 ```sh
-go get github.com/gatework/parser@v0.1.0
+go get github.com/gatework/parser@v0.1.1
 ```
 
 公开模块，无第三方依赖。版本变更见 [CHANGELOG.md](CHANGELOG.md)，发布步骤见

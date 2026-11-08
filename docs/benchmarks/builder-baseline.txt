@@ -1,0 +1,110 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   83739	      1424 ns/op	 718.93 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      28	   3911310 ns/op	 869.27 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       6	  17738174 ns/op	 945.83 MB/s	   32856 B/op	       3 allocs/op
+BenchmarkRead/small        	   34640	      3379 ns/op	 303.02 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      22	   4916206 ns/op	 691.59 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       5	  22191717 ns/op	 756.01 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   96693	      1215 ns/op	 842.69 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      31	   3404651 ns/op	 998.63 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       7	  14472583 ns/op	1159.24 MB/s	   32857 B/op	       3 allocs/op
+BenchmarkRead/small        	   40560	      2843 ns/op	 360.22 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      26	   4061883 ns/op	 837.05 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       6	  17489812 ns/op	 959.26 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   97515	      1216 ns/op	 842.18 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      31	   3391056 ns/op	1002.64 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       7	  15221619 ns/op	1102.20 MB/s	   32857 B/op	       3 allocs/op
+BenchmarkRead/small        	   42259	      2820 ns/op	 363.09 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      26	   4184317 ns/op	 812.56 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       6	  19145542 ns/op	 876.30 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   75510	      2660 ns/op	 385.03 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      27	   6031156 ns/op	 563.74 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       6	  19599528 ns/op	 856.00 MB/s	   32856 B/op	       3 allocs/op
+BenchmarkRead/small        	   33343	      3503 ns/op	 292.30 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      20	   5169740 ns/op	 657.67 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       5	  21812883 ns/op	 769.14 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   68737	      1704 ns/op	 601.03 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      26	   4153106 ns/op	 818.66 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       6	  17122181 ns/op	 979.85 MB/s	   32858 B/op	       3 allocs/op
+BenchmarkRead/small        	   26706	      3776 ns/op	 271.20 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      24	   4672521 ns/op	 727.66 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       5	  20574108 ns/op	 815.45 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   86174	      1398 ns/op	 732.48 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      27	   3914924 ns/op	 868.47 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       7	  16666065 ns/op	1006.67 MB/s	   32857 B/op	       3 allocs/op
+BenchmarkRead/small        	   32119	      3410 ns/op	 300.28 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      24	   4665587 ns/op	 728.74 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       5	  20358792 ns/op	 824.08 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   84912	      1563 ns/op	 655.06 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      27	   5801003 ns/op	 586.11 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       4	  29717156 ns/op	 564.56 MB/s	   32856 B/op	       3 allocs/op
+BenchmarkRead/small        	   14074	      7190 ns/op	 142.43 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      19	   5528366 ns/op	 615.01 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       5	  21354000 ns/op	 785.67 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	  103770	      1178 ns/op	 869.42 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      33	   3194124 ns/op	1064.45 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       8	  13921630 ns/op	1205.12 MB/s	   32858 B/op	       3 allocs/op
+BenchmarkRead/small        	   45981	      2668 ns/op	 383.78 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      30	   3901807 ns/op	 871.39 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       6	  16750708 ns/op	1001.58 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   96746	      1203 ns/op	 851.56 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      34	   3321390 ns/op	1023.67 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       8	  13992125 ns/op	1199.05 MB/s	   32858 B/op	       3 allocs/op
+BenchmarkRead/small        	   46198	      2545 ns/op	 402.35 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      28	   3780071 ns/op	 899.45 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       6	  17663361 ns/op	 949.83 MB/s	87285856 B/op	      28 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkNew/small         	   98252	      1216 ns/op	 842.04 MB/s	    2120 B/op	       9 allocs/op
+BenchmarkNew/short_lines   	      32	   3242171 ns/op	1048.68 MB/s	 8402256 B/op	      33 allocs/op
+BenchmarkNew/long_line     	       8	  13982224 ns/op	1199.90 MB/s	   32856 B/op	       3 allocs/op
+BenchmarkRead/small        	   45896	      2631 ns/op	 389.13 MB/s	   34888 B/op	      10 allocs/op
+BenchmarkRead/short_lines  	      28	   3775519 ns/op	 900.54 MB/s	26162512 B/op	      51 allocs/op
+BenchmarkRead/long_line    	       6	  16698611 ns/op	1004.71 MB/s	87285856 B/op	      28 allocs/op
+PASS

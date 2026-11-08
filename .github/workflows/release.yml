@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to publish or verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ inputs.tag || github.ref_name }}
+      - name: Publish and verify the successful CI artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: python3 scripts/release.py

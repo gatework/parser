@@ -1,0 +1,110 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+                                 │ docs/benchmarks/baseline.txt │      docs/benchmarks/final.txt       │
+                                 │            sec/op            │    sec/op     vs base                │
+New/small                                          1.016µ ±  9%   1.018µ ±  6%        ~ (p=0.424 n=10)
+New/short_lines                                    2.831m ± 12%   2.819m ±  4%        ~ (p=0.739 n=10)
+New/long_line                                      12.73m ±  7%   12.70m ±  4%        ~ (p=0.165 n=10)
+Read/small                                         2.306µ ±  2%   2.290µ ±  3%        ~ (p=0.086 n=10)
+Read/short_lines                                   3.328m ±  6%   3.328m ±  5%        ~ (p=0.971 n=10)
+Read/long_line                                     15.10m ±  6%   14.63m ± 10%        ~ (p=0.280 n=10)
+Lines/small                                        722.0n ±  2%   710.9n ±  2%        ~ (p=0.063 n=10)
+Lines/short_lines                                  3.902m ±  7%   3.772m ±  5%   -3.32% (p=0.023 n=10)
+Lines/long_line                                    15.45n ±  5%   15.25n ±  4%        ~ (p=0.493 n=10)
+CursorNext/small                                   552.5n ±  4%   541.2n ±  2%   -2.05% (p=0.043 n=10)
+CursorNext/short_lines                             1.657m ±  5%   1.657m ±  1%        ~ (p=0.579 n=10)
+CursorNext/long_line                               16.42n ±  0%   16.47n ±  1%        ~ (p=0.493 n=10)
+UnparsedLines/small/sparse                         193.6n ±  1%   108.4n ±  5%  -44.01% (p=0.000 n=10)
+UnparsedLines/small/dense                         1371.5n ±  3%   725.6n ±  7%  -47.10% (p=0.000 n=10)
+UnparsedLines/short_lines/sparse                   714.9µ ±  7%   320.9µ ±  3%  -55.11% (p=0.000 n=10)
+UnparsedLines/short_lines/dense                   11.923m ± 14%   3.930m ±  8%  -67.03% (p=0.000 n=10)
+UnparsedText/small/sparse                          86.12n ± 10%   66.71n ±  2%  -22.54% (p=0.000 n=10)
+UnparsedText/small/dense                           521.9n ± 12%   296.9n ± 13%  -43.10% (p=0.000 n=10)
+UnparsedText/short_lines/sparse                    152.8µ ±  9%   147.2µ ±  5%   -3.66% (p=0.019 n=10)
+UnparsedText/short_lines/dense                    1283.4µ ±  6%   983.8µ ± 20%  -23.34% (p=0.000 n=10)
+All/small                                                         287.4n ±  2%
+All/short_lines                                                   913.0µ ±  3%
+All/long_line                                                     5.205n ±  2%
+Unparsed/small/sparse                                             36.50n ±  4%
+Unparsed/small/dense                                              240.0n ±  5%
+Unparsed/short_lines/sparse                                       118.1µ ±  7%
+Unparsed/short_lines/dense                                        906.0µ ±  5%
+geomean                                            27.36µ         12.86µ        -19.64%
+
+                 │ docs/benchmarks/baseline.txt │      docs/benchmarks/final.txt      │
+                 │             B/s              │     B/s       vs base               │
+New/small                         961.6Mi ±  8%   959.8Mi ± 6%       ~ (p=0.436 n=10)
+New/short_lines                   1.119Gi ± 11%   1.123Gi ± 4%       ~ (p=0.739 n=10)
+New/long_line                     1.227Gi ±  7%   1.232Gi ± 4%       ~ (p=0.165 n=10)
+Read/small                        423.5Mi ±  2%   426.4Mi ± 3%       ~ (p=0.105 n=10)
+Read/short_lines                  974.4Mi ±  6%   974.4Mi ± 5%       ~ (p=0.971 n=10)
+Read/long_line                    1.035Gi ±  5%   1.068Gi ± 9%       ~ (p=0.280 n=10)
+geomean                           919.7Mi         926.5Mi       +0.74%
+
+                                 │ docs/benchmarks/baseline.txt │       docs/benchmarks/final.txt        │
+                                 │             B/op             │     B/op      vs base                  │
+New/small                                        2.070Ki ± 0%     2.070Ki ± 0%        ~ (p=1.000 n=10) ¹
+New/short_lines                                 11.232Mi ± 0%     8.013Mi ± 0%  -28.66% (p=0.000 n=10)
+New/long_line                                 16384.09Ki ± 0%     32.09Ki ± 0%  -99.80% (p=0.000 n=10)
+Read/small                                       35.07Ki ± 0%     34.07Ki ± 0%   -2.85% (p=0.000 n=10)
+Read/short_lines                                 28.20Mi ± 0%     24.95Mi ± 0%  -11.52% (p=0.000 n=10)
+Read/long_line                                   99.24Mi ± 0%     83.24Mi ± 0%  -16.12% (p=0.000 n=10)
+Lines/small                                      4.000Ki ± 0%     4.000Ki ± 0%        ~ (p=1.000 n=10) ¹
+Lines/short_lines                                10.69Mi ± 0%     10.69Mi ± 0%        ~ (p=1.000 n=10) ¹
+Lines/long_line                                    64.00 ± 0%       64.00 ± 0%        ~ (p=1.000 n=10) ¹
+CursorNext/small                                   0.000 ± 0%       0.000 ± 0%        ~ (p=1.000 n=10) ¹
+CursorNext/short_lines                             0.000 ± 0%       0.000 ± 0%        ~ (p=1.000 n=10) ¹
+CursorNext/long_line                               0.000 ± 0%       0.000 ± 0%        ~ (p=1.000 n=10) ¹
+UnparsedLines/small/sparse                         848.0 ± 0%       352.0 ± 0%  -58.49% (p=0.000 n=10)
+UnparsedLines/small/dense                        7.828Ki ± 0%     3.375Ki ± 0%  -56.89% (p=0.000 n=10)
+UnparsedLines/short_lines/sparse                 5.656Mi ± 0%     1.070Mi ± 0%  -81.08% (p=0.000 n=10)
+UnparsedLines/short_lines/dense                 48.812Mi ± 0%     9.617Mi ± 0%  -80.30% (p=0.000 n=10)
+UnparsedText/small/sparse                         240.00 ± 0%       96.00 ± 0%  -60.00% (p=0.000 n=10)
+UnparsedText/small/dense                         3.234Ki ± 0%     1.000Ki ± 0%  -69.08% (p=0.000 n=10)
+UnparsedText/short_lines/sparse                 1501.4Ki ± 0%     336.0Ki ± 0%  -77.62% (p=0.000 n=10)
+UnparsedText/short_lines/dense                  16.013Mi ± 0%     2.922Mi ± 0%  -81.75% (p=0.000 n=10)
+All/small                                                           0.000 ± 0%
+All/short_lines                                                     0.000 ± 0%
+All/long_line                                                       0.000 ± 0%
+Unparsed/small/sparse                                               0.000 ± 0%
+Unparsed/small/dense                                                0.000 ± 0%
+Unparsed/short_lines/sparse                                         0.000 ± 0%
+Unparsed/short_lines/dense                                          0.000 ± 0%
+geomean                                                       ²                 -57.68%                ²
+¹ all samples are equal
+² summaries must be >0 to compute geomean
+
+                                 │ docs/benchmarks/baseline.txt │      docs/benchmarks/final.txt       │
+                                 │          allocs/op           │ allocs/op   vs base                  │
+New/small                                          9.000 ± 0%     9.000 ± 0%        ~ (p=1.000 n=10) ¹
+New/short_lines                                    33.00 ± 0%     33.00 ± 0%        ~ (p=1.000 n=10) ¹
+New/long_line                                      3.000 ± 0%     3.000 ± 0%        ~ (p=1.000 n=10) ¹
+Read/small                                         11.00 ± 0%     10.00 ± 0%   -9.09% (p=0.000 n=10)
+Read/short_lines                                   52.00 ± 0%     51.00 ± 0%   -1.92% (p=0.000 n=10)
+Read/long_line                                     29.00 ± 0%     28.00 ± 0%   -3.45% (p=0.000 n=10)
+Lines/small                                        1.000 ± 0%     1.000 ± 0%        ~ (p=1.000 n=10) ¹
+Lines/short_lines                                  1.000 ± 0%     1.000 ± 0%        ~ (p=1.000 n=10) ¹
+Lines/long_line                                    1.000 ± 0%     1.000 ± 0%        ~ (p=1.000 n=10) ¹
+CursorNext/small                                   0.000 ± 0%     0.000 ± 0%        ~ (p=1.000 n=10) ¹
+CursorNext/short_lines                             0.000 ± 0%     0.000 ± 0%        ~ (p=1.000 n=10) ¹
+CursorNext/long_line                               0.000 ± 0%     0.000 ± 0%        ~ (p=1.000 n=10) ¹
+UnparsedLines/small/sparse                         4.000 ± 0%     1.000 ± 0%  -75.00% (p=0.000 n=10)
+UnparsedLines/small/dense                          7.000 ± 0%     1.000 ± 0%  -85.71% (p=0.000 n=10)
+UnparsedLines/short_lines/sparse                  22.000 ± 0%     1.000 ± 0%  -95.45% (p=0.000 n=10)
+UnparsedLines/short_lines/dense                   31.000 ± 0%     1.000 ± 0%  -96.77% (p=0.000 n=10)
+UnparsedText/small/sparse                          4.000 ± 0%     1.000 ± 0%  -75.00% (p=0.000 n=10)
+UnparsedText/small/dense                           8.000 ± 0%     1.000 ± 0%  -87.50% (p=0.000 n=10)
+UnparsedText/short_lines/sparse                   26.000 ± 0%     1.000 ± 0%  -96.15% (p=0.000 n=10)
+UnparsedText/short_lines/dense                    36.000 ± 0%     1.000 ± 0%  -97.22% (p=0.000 n=10)
+All/small                                                         0.000 ± 0%
+All/short_lines                                                   0.000 ± 0%
+All/long_line                                                     0.000 ± 0%
+Unparsed/small/sparse                                             0.000 ± 0%
+Unparsed/small/dense                                              0.000 ± 0%
+Unparsed/short_lines/sparse                                       0.000 ± 0%
+Unparsed/short_lines/dense                                        0.000 ± 0%
+geomean                                                       ²               -63.79%                ²
+¹ all samples are equal
+² summaries must be >0 to compute geomean

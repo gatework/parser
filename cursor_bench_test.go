@@ -35,9 +35,14 @@ func benchmarkUnparsedCursor(b *testing.B, name, density string) *parser.Cursor 
 	}
 	cursor := content.Cursor()
 	for n := 1; n <= content.Len(); n++ {
-		isParsed := n%10 == 0
-		if density == "sparse" {
-			isParsed = !isParsed
+		var isParsed bool
+		switch density {
+		case "sparse":
+			isParsed = n%10 != 0
+		case "rare":
+			isParsed = n%100 != 0
+		default:
+			isParsed = n%10 == 0
 		}
 		if err := cursor.SetParsed(n, isParsed); err != nil {
 			b.Fatal(err)
@@ -48,7 +53,7 @@ func benchmarkUnparsedCursor(b *testing.B, name, density string) *parser.Cursor 
 
 func BenchmarkUnparsedLines(b *testing.B) {
 	for _, name := range []string{"small", "short_lines"} {
-		for _, density := range []string{"sparse", "dense"} {
+		for _, density := range []string{"rare", "sparse", "dense"} {
 			b.Run(name+"/"+density, func(b *testing.B) {
 				cursor := benchmarkUnparsedCursor(b, name, density)
 				b.ReportAllocs()
@@ -66,7 +71,7 @@ func BenchmarkUnparsedLines(b *testing.B) {
 
 func BenchmarkUnparsedText(b *testing.B) {
 	for _, name := range []string{"small", "short_lines"} {
-		for _, density := range []string{"sparse", "dense"} {
+		for _, density := range []string{"rare", "sparse", "dense"} {
 			b.Run(name+"/"+density, func(b *testing.B) {
 				cursor := benchmarkUnparsedCursor(b, name, density)
 				b.ReportAllocs()
@@ -80,7 +85,7 @@ func BenchmarkUnparsedText(b *testing.B) {
 
 func BenchmarkUnparsed(b *testing.B) {
 	for _, name := range []string{"small", "short_lines"} {
-		for _, density := range []string{"sparse", "dense"} {
+		for _, density := range []string{"rare", "sparse", "dense"} {
 			b.Run(name+"/"+density, func(b *testing.B) {
 				cursor := benchmarkUnparsedCursor(b, name, density)
 				b.ReportAllocs()
@@ -92,6 +97,57 @@ func BenchmarkUnparsed(b *testing.B) {
 					benchmarkTotal = total
 				}
 			})
+		}
+	}
+}
+
+func BenchmarkNextUnparsed(b *testing.B) {
+	for _, name := range []string{"small", "short_lines"} {
+		for _, density := range []string{"rare", "sparse", "dense"} {
+			b.Run(name+"/"+density, func(b *testing.B) {
+				cursor := benchmarkUnparsedCursor(b, name, density)
+				b.ReportAllocs()
+				for b.Loop() {
+					cursor.Rewind()
+					total := 0
+					for line, ok := cursor.NextUnparsed(); ok; line, ok = cursor.NextUnparsed() {
+						total += len(line.Text)
+					}
+					benchmarkTotal = total
+				}
+			})
+		}
+	}
+}
+
+func BenchmarkContentCursor(b *testing.B) {
+	for _, name := range []string{"small", "short_lines"} {
+		b.Run(name, func(b *testing.B) {
+			content, err := parser.New(benchmarkSource(name), parser.Limits{})
+			if err != nil {
+				b.Fatal(err)
+			}
+			b.ReportAllocs()
+			for b.Loop() {
+				benchmarkTotal = content.Cursor().UnparsedCount()
+			}
+		})
+	}
+}
+
+func BenchmarkSetParsedRange(b *testing.B) {
+	content, err := parser.New(benchmarkSource("short_lines"), parser.Limits{})
+	if err != nil {
+		b.Fatal(err)
+	}
+	cursor := content.Cursor()
+	b.ReportAllocs()
+	for b.Loop() {
+		if err := cursor.SetParsedRange(1, content.Len(), true); err != nil {
+			b.Fatal(err)
+		}
+		if err := cursor.SetParsedRange(1, content.Len(), false); err != nil {
+			b.Fatal(err)
 		}
 	}
 }

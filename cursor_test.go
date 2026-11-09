@@ -51,7 +51,7 @@ func TestCursorMultiPass(t *testing.T) {
 	if line, ok := cursor.NextUnparsed(); !ok || line.Number != 2 {
 		t.Fatalf("unmarked line was not revisited: %#v, %v", line, ok)
 	}
-	if content.String() != source || content.Cursor().UnparsedText() != source {
+	if content.Text() != source || content.Cursor().UnparsedText() != source {
 		t.Fatal("cursor state escaped into the content")
 	}
 }
@@ -154,10 +154,10 @@ func TestCursorFlags(t *testing.T) {
 		}
 	}
 	for _, number := range []int{-1, 0, 3, int(^uint(0) >> 1)} {
-		if err := cursor.SetParsed(number, true); !errors.Is(err, parser.ErrLine) {
+		if err := cursor.SetParsed(number, true); !errors.Is(err, parser.ErrLineRange) {
 			t.Fatalf("SetParsed(%d) error = %v", number, err)
 		}
-		if flag, err := cursor.IsParsed(number); flag || !errors.Is(err, parser.ErrLine) {
+		if flag, err := cursor.IsParsed(number); flag || !errors.Is(err, parser.ErrLineRange) {
 			t.Fatalf("IsParsed(%d) = %v, %v", number, flag, err)
 		}
 	}
@@ -209,8 +209,17 @@ func TestCursorZeroValue(t *testing.T) {
 	if cursor.Position() != 0 || cursor.UnparsedText() != "" || len(cursor.UnparsedLines()) != 0 {
 		t.Fatal("zero cursor is not empty")
 	}
-	if err := cursor.SetParsed(1, true); !errors.Is(err, parser.ErrLine) {
+	if err := cursor.SetParsed(1, true); !errors.Is(err, parser.ErrLineRange) {
 		t.Fatalf("empty cursor accepted a flag: %v", err)
+	}
+	if cursor.Content() != nil || cursor.UnparsedCount() != 0 {
+		t.Fatal("zero cursor reported a source")
+	}
+	if err := cursor.Seek(0); err != nil {
+		t.Fatal(err)
+	}
+	if err := cursor.Seek(1); !errors.Is(err, parser.ErrLineRange) {
+		t.Fatalf("empty cursor sought past eof: %v", err)
 	}
 }
 
@@ -236,7 +245,7 @@ func TestContentConcurrentCursors(t *testing.T) {
 				}
 				count++
 			}
-			if count != 3 || content.Digest() != digest || content.String() != source {
+			if count != 3 || content.Digest() != digest || content.Text() != source {
 				t.Fatal("shared content changed")
 			}
 		})
@@ -250,7 +259,7 @@ func TestCursorSetParsedRange(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, interval := range [][2]int{{0, 2}, {1, 4}, {3, 2}, {-1, 1}, {4, 4}} {
-		if err := cursor.SetParsedRange(interval[0], interval[1], true); !errors.Is(err, parser.ErrLine) {
+		if err := cursor.SetParsedRange(interval[0], interval[1], true); !errors.Is(err, parser.ErrLineRange) {
 			t.Fatalf("invalid range accepted: %v, %v", interval, err)
 		}
 		if cursor.UnparsedText() != "one\nthree" || cursor.Position() != 1 {
@@ -272,7 +281,7 @@ func TestCursorSetParsedRange(t *testing.T) {
 		t.Fatal("range reset did not restore lines")
 	}
 	var empty parser.Cursor
-	if err := empty.SetParsedRange(1, 1, true); !errors.Is(err, parser.ErrLine) {
+	if err := empty.SetParsedRange(1, 1, true); !errors.Is(err, parser.ErrLineRange) {
 		t.Fatal("empty cursor accepted a range")
 	}
 }
@@ -317,5 +326,76 @@ func TestCursorUnparsedIterator(t *testing.T) {
 	var empty parser.Cursor
 	for range empty.Unparsed() {
 		t.Fatal("empty cursor yielded a line")
+	}
+}
+
+func TestCursorSeek(t *testing.T) {
+	content := newContent(t, "alpha\nbeta\r\ngamma")
+	cursor := content.Cursor()
+	if cursor.Content() != content {
+		t.Fatal("cursor reported another source")
+	}
+	for _, position := range []int{-1, content.Len() + 1} {
+		if err := cursor.Seek(position); !errors.Is(err, parser.ErrLineRange) {
+			t.Fatalf("Seek(%d) = %v, want ErrLineRange", position, err)
+		}
+		if cursor.Position() != 0 {
+			t.Fatal("failed Seek moved the cursor")
+		}
+	}
+	if err := cursor.SetParsed(2, true); err != nil {
+		t.Fatal(err)
+	}
+	line, ok := content.LineAt(strings.Index(content.Text(), "gamma"))
+	if !ok {
+		t.Fatal("offset not found")
+	}
+	if err := cursor.Seek(line.Number - 1); err != nil {
+		t.Fatal(err)
+	}
+	if next, ok := cursor.Next(); !ok || next != line {
+		t.Fatalf("Next after Seek = %+v, want %+v", next, line)
+	}
+	if err := cursor.Seek(content.Len()); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := cursor.Next(); ok {
+		t.Fatal("Seek to Len did not reach eof")
+	}
+	if err := cursor.Seek(0); err != nil {
+		t.Fatal(err)
+	}
+	if next, _ := cursor.NextUnparsed(); next.Number != 1 {
+		t.Fatal("Seek changed parsed flags or position")
+	}
+	if flag, _ := cursor.IsParsed(2); !flag {
+		t.Fatal("Seek cleared a parsed flag")
+	}
+}
+
+func TestCursorUnparsedCount(t *testing.T) {
+	content := newContent(t, "a\nb\nc\nd\n")
+	cursor := content.Cursor()
+	steps := []struct {
+		apply func() error
+		want  int
+	}{
+		{func() error { return nil }, 4},
+		{func() error { return cursor.SetParsed(2, true) }, 3},
+		{func() error { return cursor.SetParsed(2, true) }, 3},
+		{func() error { return cursor.SetParsedRange(1, 4, true) }, 0},
+		{func() error { return cursor.SetParsedRange(2, 3, false) }, 2},
+		{func() error { return cursor.SetParsed(9, false) }, 2},
+		{func() error { return cursor.SetParsedRange(3, 9, false) }, 2},
+		{func() error { return cursor.SetParsed(3, false) }, 2},
+	}
+	for i, step := range steps {
+		_ = step.apply()
+		if got := cursor.UnparsedCount(); got != step.want || got != len(cursor.UnparsedLines()) {
+			t.Fatalf("step %d: UnparsedCount = %d, want %d", i, got, step.want)
+		}
+	}
+	if other := content.Cursor(); other.UnparsedCount() != content.Len() {
+		t.Fatal("new cursor shares another cursor's count")
 	}
 }

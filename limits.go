@@ -19,11 +19,20 @@ var (
 	ErrLimit = errors.New("parser: source limit exceeded")
 )
 
-// LimitError reports an exceeded source limit. Resource is "bytes" or "lines".
-// Observed is the amount observed when the limit was exceeded; it may be a
+// Resource names the source dimension bounded by Limits.
+type Resource string
+
+const (
+	// ResourceBytes is the source size in bytes.
+	ResourceBytes Resource = "bytes"
+	// ResourceLines is the number of physical lines.
+	ResourceLines Resource = "lines"
+)
+
+// LimitError reports an exceeded source limit. Observed is the amount observed when the limit was exceeded; it may be a
 // lower bound on the total input size because reading stops early.
 type LimitError struct {
-	Resource string
+	Resource Resource
 	Limit    int
 	Observed int
 }

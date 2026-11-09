@@ -1,0 +1,111 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+                                 │   base.txt    │              final.txt              │
+                                 │    sec/op     │   sec/op     vs base                │
+CursorNext/small                    533.6n ±  1%   532.3n ± 0%        ~ (p=0.853 n=10)
+CursorNext/short_lines              1.633m ±  1%   1.632m ± 0%        ~ (p=0.912 n=10)
+CursorNext/long_line                16.29n ±  1%   16.24n ± 0%        ~ (p=0.078 n=10)
+UnparsedLines/small/rare           18.110n ±  1%   2.770n ± 4%  -84.71% (p=0.000 n=10)
+UnparsedLines/small/sparse          91.07n ±  1%   88.39n ± 1%   -2.95% (p=0.000 n=10)
+UnparsedLines/small/dense           704.4n ±  1%   716.9n ± 2%   +1.77% (p=0.000 n=10)
+UnparsedLines/short_lines/rare      62.32µ ±  1%   24.08µ ± 1%  -61.36% (p=0.000 n=10)
+UnparsedLines/short_lines/sparse    262.8µ ±  5%   256.8µ ± 4%        ~ (p=0.280 n=10)
+UnparsedLines/short_lines/dense     3.617m ±  2%   3.667m ± 3%        ~ (p=0.063 n=10)
+UnparsedText/small/rare            33.175n ±  1%   3.625n ± 7%  -89.07% (p=0.000 n=10)
+UnparsedText/small/sparse           66.06n ±  2%   38.05n ± 2%  -42.40% (p=0.000 n=10)
+UnparsedText/small/dense           275.80n ±  1%   87.03n ± 1%  -68.45% (p=0.000 n=10)
+UnparsedText/short_lines/rare      128.68µ ±  4%   10.43µ ± 4%  -91.89% (p=0.000 n=10)
+UnparsedText/short_lines/sparse     154.3µ ±  2%   105.2µ ± 3%  -31.80% (p=0.000 n=10)
+UnparsedText/short_lines/dense      961.9µ ±  2%   181.2µ ± 6%  -81.16% (p=0.000 n=10)
+Unparsed/small/rare                18.140n ± 25%   1.696n ± 0%  -90.65% (p=0.000 n=10)
+Unparsed/small/sparse               32.97n ±  9%   28.15n ± 1%  -14.62% (p=0.000 n=10)
+Unparsed/small/dense                233.4n ±  3%   265.0n ± 5%  +13.54% (p=0.000 n=10)
+Unparsed/short_lines/rare           65.72µ ± 25%   11.08µ ± 1%  -83.14% (p=0.000 n=10)
+Unparsed/short_lines/sparse        108.79µ ±  4%   98.28µ ± 1%   -9.66% (p=0.000 n=10)
+Unparsed/short_lines/dense          829.8µ ±  1%   873.9µ ± 1%   +5.31% (p=0.000 n=10)
+NextUnparsed/small/rare            62.725n ±  1%   4.168n ± 0%  -93.36% (p=0.000 n=10)
+NextUnparsed/small/sparse           85.67n ±  1%   44.78n ± 1%  -47.73% (p=0.000 n=10)
+NextUnparsed/small/dense            400.6n ±  0%   417.8n ± 0%   +4.32% (p=0.000 n=10)
+NextUnparsed/short_lines/rare      127.83µ ± 76%   16.95µ ± 1%  -86.74% (p=0.000 n=10)
+NextUnparsed/short_lines/sparse     286.9µ ±  2%   154.7µ ± 1%  -46.07% (p=0.000 n=10)
+NextUnparsed/short_lines/dense      1.231m ±  3%   1.270m ± 1%   +3.15% (p=0.004 n=10)
+ContentCursor/small                 9.214n ±  1%   1.628n ± 1%  -82.33% (p=0.000 n=10)
+ContentCursor/short_lines          3389.5n ± 17%   526.1n ± 1%  -84.48% (p=0.000 n=10)
+SetParsedRange                     175.72µ ±  5%   12.41µ ± 1%  -92.94% (p=0.000 n=10)
+geomean                             4.200µ         1.666µ       -60.34%
+
+                                 │    base.txt     │                 final.txt                 │
+                                 │      B/op       │     B/op      vs base                     │
+CursorNext/small                      0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+CursorNext/short_lines                0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+CursorNext/long_line                  0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/small/rare              0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/small/sparse            352.0 ± 0%       352.0 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/small/dense           3.375Ki ± 0%     3.375Ki ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/short_lines/rare      112.0Ki ± 0%     112.0Ki ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/short_lines/sparse    1.070Mi ± 0%     1.070Mi ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/short_lines/dense     9.617Mi ± 0%     9.617Mi ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/small/rare               0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/small/sparse             96.00 ± 0%       96.00 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/small/dense            1.000Ki ± 0%     1.000Ki ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/short_lines/rare       40.00Ki ± 0%     40.00Ki ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/short_lines/sparse     336.0Ki ± 0%     336.0Ki ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/short_lines/dense      2.922Mi ± 0%     2.922Mi ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/small/rare                   0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/small/sparse                 0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/small/dense                  0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/short_lines/rare             0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/short_lines/sparse           0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/short_lines/dense            0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/small/rare               0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/small/sparse             0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/small/dense              0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/short_lines/rare         0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/short_lines/sparse       0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/short_lines/dense        0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+ContentCursor/small                   64.00 ± 0%        0.00 ± 0%  -100.00% (p=0.000 n=10)
+ContentCursor/short_lines          200.00Ki ± 0%     26.62Ki ± 0%   -86.69% (p=0.000 n=10)
+SetParsedRange                        0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+geomean                                          ²                 ?                       ² ³
+¹ all samples are equal
+² summaries must be >0 to compute geomean
+³ ratios must be >0 to compute geomean
+
+                                 │   base.txt   │                final.txt                │
+                                 │  allocs/op   │ allocs/op   vs base                     │
+CursorNext/small                   0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+CursorNext/short_lines             0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+CursorNext/long_line               0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/small/rare           0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/small/sparse         1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/small/dense          1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/short_lines/rare     1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/short_lines/sparse   1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedLines/short_lines/dense    1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/small/rare            0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/small/sparse          1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/small/dense           1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/short_lines/rare      1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/short_lines/sparse    1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+UnparsedText/short_lines/dense     1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/small/rare                0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/small/sparse              0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/small/dense               0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/short_lines/rare          0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/short_lines/sparse        0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Unparsed/short_lines/dense         0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/small/rare            0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/small/sparse          0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/small/dense           0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/short_lines/rare      0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/short_lines/sparse    0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+NextUnparsed/short_lines/dense     0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+ContentCursor/small                1.000 ± 0%     0.000 ± 0%  -100.00% (p=0.000 n=10)
+ContentCursor/short_lines          1.000 ± 0%     1.000 ± 0%         ~ (p=1.000 n=10) ¹
+SetParsedRange                     0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+geomean                                       ²               ?                       ² ³
+¹ all samples are equal
+² summaries must be >0 to compute geomean
+³ ratios must be >0 to compute geomean

@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.2.0
+
+2026-11-09
+
+Breaking release; no compatibility shims are provided.
+
+- `Content.String()` is replaced by `Content.Text()`. `Content` now implements
+  `fmt.Formatter` and `slog.LogValuer`, printing only line count, byte count and
+  digest, so formatting or logging a Content never discloses the source.
+- `ErrLine` is renamed `ErrLineRange`; it also reports invalid `Seek` positions.
+- `LimitError.Resource` has type `Resource`, with `ResourceBytes` and `ResourceLines`.
+- New `Cursor.Seek`, `Cursor.Content`, `Cursor.UnparsedCount` and `Content.Span`.
+- Parsed flags are stored as a bitset: cursor memory is one bit per line, and
+  scans skip fully parsed words. See [performance](docs/performance.md).
+
 ## v0.1.1
 
 2026-11-08

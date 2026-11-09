@@ -11,6 +11,10 @@ linters:
     - unused
     - nilerr
     - nolintlint
+    - errorlint
+    - revive
+    - modernize
+    - gocritic
   settings:
     nolintlint:
       require-explanation: true

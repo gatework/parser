@@ -47,7 +47,7 @@ func (b *contentBuilder) remaining() int { return b.limits.MaxBytes - b.offset }
 // cannot hide it; cancellation is then checked before every scanChunk step.
 func (b *contentBuilder) write(piece string) error {
 	if len(piece) > b.remaining() {
-		return &LimitError{Resource: "bytes", Limit: b.limits.MaxBytes, Observed: b.offset + len(piece)}
+		return &LimitError{Resource: ResourceBytes, Limit: b.limits.MaxBytes, Observed: b.offset + len(piece)}
 	}
 	for len(piece) > 0 {
 		if err := b.ctx.Err(); err != nil {
@@ -106,7 +106,7 @@ func (b *contentBuilder) index(text string) error {
 }
 
 func (b *contentBuilder) lineLimitError() error {
-	return &LimitError{Resource: "lines", Limit: b.limits.MaxLines, Observed: b.limits.MaxLines + 1}
+	return &LimitError{Resource: ResourceLines, Limit: b.limits.MaxLines, Observed: b.limits.MaxLines + 1}
 }
 
 // finish closes the final unterminated line and returns the Content for text,

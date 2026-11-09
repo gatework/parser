@@ -8,7 +8,7 @@
 ## 安装
 
 ```sh
-go get github.com/gatework/parser@v0.1.1
+go get github.com/gatework/parser@v0.2.0
 ```
 
 公开模块，无第三方依赖。版本变更见 [CHANGELOG.md](CHANGELOG.md)，发布步骤见
@@ -49,9 +49,10 @@ fmt.Printf("remaining: %q\n", cursor.UnparsedText())
 
 | 接口 | 契约 |
 |---|---|
-| `Content.String()` | 完整原始字节 |
+| `Content.Text()` | 完整原始字节 |
 | `Content.Len()` | 物理行数 |
 | `Content.Line(number)` | 按从 1 开始的行号查询，越界返回零值和 `false` |
+| `Content.Span(first, last)` | 一基闭区间内所有行的原始字节，含原换行符；空、反向或越界区间返回 `""` 和 `false` |
 | `Content.LineAt(offset)` | 按零基字节偏移查找所在行，使用二分搜索；EOF 或越界返回零值和 `false` |
 | `Content.All()` | 返回 `iter.Seq[Line]`，按原文顺序逐行遍历 |
 | `Content.Lines()` | 按原文顺序返回新的 `[]Line` |
@@ -66,7 +67,13 @@ LF、CRLF 和 CR 都是行结束符，允许混用。缩进、尾部空格、BOM
 空输入为零行；`"a\n"` 为一行；`"a\n\n"` 为两行，第二行为空。
 拼接所有行的 `Raw` 总能恢复原文。摘要包含原始换行符，不随解析标记变化。
 `LineAt` 使用字节偏移；多字节字符内部的每个偏移均属于同一行，换行符属于它结束的行。
-`len(content.String())` 是 EOF，不属于任何行。
+`len(content.Text())` 是 EOF，不属于任何行。
+`Span(first, last)` 等于这些行 `Raw` 的拼接，与原文共享存储，适合整块保留 banner、
+证书等多行结构。
+
+`Content` 实现 `fmt.Formatter` 和 `slog.LogValuer`：任何 `fmt` 动词（包括 `%v`、
+`%+v`、嵌入结构体后打印）和 `slog` 的 Text/JSON 输出都只给出行数、字节数和摘要，
+不输出原文，避免把设备口令、密钥写进日志。需要原始字节时显式调用 `Text()`。
 
 `Content` 的零值表示空文本。其内容构造后不可变，可以并发读取。
 返回的行和值切片可以由调用方修改，不会改变原文或内部索引。
@@ -85,24 +92,29 @@ LF、CRLF 和 CR 都是行结束符，允许混用。缩进、尾部空格、BOM
 | `Peek()` | 预览下一物理行，不移动位置 |
 | `NextUnparsed()` | 向后寻找下一未解析行，包括空行 |
 | `Position()` | 下一物理行的零基索引；EOF 时等于行数 |
+| `Seek(position)` | 移到 `[0, Len]` 内的零基位置，与 `Position()` 同一值域；越界返回 `ErrLineRange` 且不移动 |
+| `Content()` | 游标读取的 `Content`；零值游标返回 nil |
 | `Prev()` | 回退一个物理行；已在开头时返回 `false` |
 | `Rewind()` | 位置回到 0，保留标记 |
 | `Checkpoint()` / `Restore(checkpoint)` | 保存、恢复同一游标的位置，保留标记 |
 | `SetParsed(line, parsed)` | 设置一基行号的标记；重复设置相同值无副作用 |
 | `SetParsedRange(first, last, parsed)` | 设置一基闭区间内所有行的标记；先校验整个范围，失败时不改变任何状态 |
 | `IsParsed(line)` | 查询一基行号的标记 |
+| `UnparsedCount()` | 未解析行数，常数时间；为 0 表示全部解析完毕 |
 | `Unparsed()` | 返回 `iter.Seq[Line]`，遍历所有当前未解析行，不依赖或改变游标位置 |
 | `UnparsedLines()` | 返回所有未解析行的新切片，保留原始行号和顺序 |
 | `UnparsedText()` | 按原顺序拼接所有未解析行的 `Raw` |
 
 三种读取操作都返回 `(Line, bool)`；EOF 返回零值和 `false`，不会把空行当成 EOF。
 读取、回退和检查点恢复只影响位置。成功解析后显式调用 `SetParsed(number, true)`；
-暂缓处理时继续读取即可。使用 `SetParsed(number, false)` 撤销标记后，需要回到对应
+暂缓处理时继续读取即可。
+先在整份原文上搜索时，用 `LineAt(offset)` 得到行，再 `Seek(line.Number - 1)`，
+下一次 `Next()` 即返回该行。使用 `SetParsed(number, false)` 撤销标记后，需要回到对应
 位置或 `Rewind()` 才会重新读到已经越过的行。
 
 检查点绑定创建它的游标，可重复使用。零值检查点和其他游标的检查点均不可恢复。
 检查点不保存标记，也不回滚上层业务对象；多行解析可先验证整个块，再调用
-`SetParsedRange`。空区间、反向区间或越界区间均返回 `ErrLine`。
+`SetParsedRange`。空区间、反向区间或越界区间均返回 `ErrLineRange`。
 空白行是否跳过、注释是否算已处理，由调用方决定。
 
 `Unparsed()` 在访问每一行时检查当前标记。循环中修改尚未访问行的标记，会影响本轮
@@ -133,11 +145,11 @@ CRLF 跨越读取边界仍算一个行结束符。
 - `ErrInvalidLimits`：负数限制。
 - `ErrLimit`：原文字节数或行数超限。
 - `ErrInvalidReader`：nil Reader 或违反 `io.Reader` 契约的返回长度。
-- `ErrLine`：标记操作使用了越界行号。
+- `ErrLineRange`：标记操作使用了越界行号或区间，或 `Seek` 使用了越界位置。
 - `ErrCheckpoint`：零值或其他游标的检查点。
 - Reader 的原始错误，例如 `io.ErrUnexpectedEOF`。
 
-超限还会返回 `*LimitError`，包含 `Resource`（`"bytes"` 或 `"lines"`）、`Limit`
+超限还会返回 `*LimitError`，包含 `Resource`（`ResourceBytes` 或 `ResourceLines`）、`Limit`
 和 `Observed`。提前停止时，`Observed` 可能只是完整输入大小或行数的下界。
 通过 `errors.AsType[*parser.LimitError](err)` 获取详情，原有的
 `errors.Is(err, parser.ErrLimit)` 判断仍然有效。一次读取中已经观察到的超限、
@@ -166,7 +178,7 @@ CRLF 跨越读取边界仍算一个行结束符。
 
 | Perl 功能 | Go 用法 |
 |---|---|
-| `config` / `confContent` | `Content.Lines()` / `Content.String()`，保留原始换行 |
+| `config` / `confContent` | `Content.Lines()` / `Content.Text()`，保留原始换行 |
 | `cursor` / `nextLine` / `prevLine` | `Position()` / `Next()` / `Prev()` |
 | `goToHead` | `Rewind()` |
 | `nextUnParsedLine` | `NextUnparsed()`，解析成功后调用 `SetParsed` |

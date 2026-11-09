@@ -3,10 +3,12 @@ package parser
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
 	"iter"
+	"log/slog"
 	"slices"
 	"strings"
 )
@@ -124,7 +126,7 @@ func ReadWithContext(ctx context.Context, r io.Reader, limits Limits) (*Content,
 func readFailure(err error) error {
 	// io.Reader requires bare EOF for a graceful end. A wrapped or joined EOF
 	// must remain a failure, including when errors.Is(err, io.EOF) is true.
-	if err == nil || err == io.EOF {
+	if err == nil || err == io.EOF { //nolint:errorlint // io.Reader contract requires bare io.EOF; wrapped EOF is a failure.
 		return nil
 	}
 	return fmt.Errorf("parser: read source: %w", err)
@@ -146,30 +148,72 @@ func joinFailure(err error, causes ...error) error {
 	return errors.Join(errs...)
 }
 
-// String returns the exact original source bytes.
-func (c *Content) String() string { return c.text }
+// Text returns the exact original source bytes.
+func (c *Content) Text() string { return c.text }
+
+// Format implements [fmt.Formatter] with a summary of line count, byte count
+// and Digest for every verb, so printing a Content never discloses the
+// source, which may hold credentials. Use [Content.Text] for the bytes.
+func (c *Content) Format(f fmt.State, _ rune) {
+	if c == nil {
+		_, _ = io.WriteString(f, "<nil>")
+		return
+	}
+	digest := c.Digest()
+	_, _ = fmt.Fprintf(f, "parser.Content{lines: %d, bytes: %d, sha256: %x}", c.Len(), len(c.text), digest[:])
+}
+
+// LogValue implements [slog.LogValuer] with the same summary as Format, so
+// structured logs never include the source.
+func (c *Content) LogValue() slog.Value {
+	if c == nil {
+		return slog.StringValue("<nil>")
+	}
+	digest := c.Digest()
+	return slog.GroupValue(
+		slog.Int("lines", c.Len()),
+		slog.Int("bytes", len(c.text)),
+		slog.String("sha256", hex.EncodeToString(digest[:])),
+	)
+}
 
 // Len returns the number of physical lines.
 func (c *Content) Len() int { return len(c.ends) }
+
+// bounds returns the byte interval of the line at zero-based index i, which
+// must be in range.
+func (c *Content) bounds(i int) (start, end int) {
+	if i > 0 {
+		start = c.ends[i-1]
+	}
+	return start, c.ends[i]
+}
 
 // Line returns the one-based line number, or false when number is out of range.
 func (c *Content) Line(number int) (Line, bool) {
 	if number < 1 || number > len(c.ends) {
 		return Line{}, false
 	}
-	start := 0
-	if number > 1 {
-		start = c.ends[number-2]
-	}
-	end := c.ends[number-1]
+	start, end := c.bounds(number - 1)
 	raw := c.text[start:end]
 	text := strings.TrimSuffix(strings.TrimSuffix(raw, "\n"), "\r")
 	return Line{Number: number, StartByte: start, EndByte: end, Raw: raw, Text: text}, true
 }
 
+// Span returns the raw source bytes of the inclusive, one-based [first, last]
+// line interval, including every original line ending. It shares the source
+// storage. An empty, reversed or out-of-range interval returns "" and false.
+func (c *Content) Span(first, last int) (string, bool) {
+	if first < 1 || last < first || last > len(c.ends) {
+		return "", false
+	}
+	start, _ := c.bounds(first - 1)
+	return c.text[start:c.ends[last-1]], true
+}
+
 // LineAt returns the physical line containing a zero-based byte offset.
 // Line endings belong to the line they terminate. Offsets outside
-// [0, len(c.String())) return a zero Line and false, including EOF.
+// [0, len(c.Text())) return a zero Line and false, including EOF.
 func (c *Content) LineAt(offset int) (Line, bool) {
 	if offset < 0 || offset >= len(c.text) {
 		return Line{}, false
@@ -211,5 +255,5 @@ func (c *Content) Digest() [sha256.Size]byte {
 
 // Cursor returns a new cursor at the head with every line unparsed.
 func (c *Content) Cursor() *Cursor {
-	return &Cursor{content: c, parsed: make([]bool, c.Len())}
+	return newCursor(c)
 }

@@ -44,7 +44,7 @@ func FuzzContent(f *testing.F) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if streamed.String() != source || streamed.Len() != content.Len() || streamed.Digest() != content.Digest() {
+		if streamed.Text() != source || streamed.Len() != content.Len() || streamed.Digest() != content.Digest() {
 			t.Fatal("reader chunk boundaries changed source, line count or digest")
 		}
 		var joined strings.Builder
@@ -81,14 +81,17 @@ func FuzzContent(f *testing.F) {
 			joined.WriteString(line.Raw)
 			end = line.EndByte
 		}
-		if joined.String() != source || end != len(source) || content.String() != source || number != content.Len() {
+		if joined.String() != source || end != len(source) || content.Text() != source || number != content.Len() {
 			t.Fatal("line partition did not preserve the source")
 		}
 		if content.Digest() != sha256.Sum256([]byte(source)) {
 			t.Fatal("digest no longer identifies the source")
 		}
 		cursor := content.Cursor()
-		for _, ok := cursor.NextUnparsed(); ok; _, ok = cursor.NextUnparsed() {
+		for {
+			if _, ok := cursor.NextUnparsed(); !ok {
+				break
+			}
 		}
 		if cursor.UnparsedText() != source || cursor.Position() != content.Len() {
 			t.Fatal("reading consumed source or failed to reach eof")

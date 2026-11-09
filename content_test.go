@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"slices"
 	"strings"
 	"testing"
@@ -56,7 +57,7 @@ func TestNew(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			content := newContent(t, tt.input)
-			if content.String() != tt.input || content.Digest() != sha256.Sum256([]byte(tt.input)) {
+			if content.Text() != tt.input || content.Digest() != sha256.Sum256([]byte(tt.input)) {
 				t.Fatal("source or digest changed")
 			}
 			if content.Len() != len(tt.raw) || len(content.Lines()) != len(tt.raw) {
@@ -138,7 +139,7 @@ func TestInputLimits(t *testing.T) {
 						}
 						return
 					}
-					if content == nil || content.String() != tt.input {
+					if content == nil || content.Text() != tt.input {
 						t.Fatal("accepted input changed")
 					}
 				})
@@ -185,7 +186,7 @@ func TestRead(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if content.String() != text || content.Len() != 3 {
+			if content.Text() != text || content.Len() != 3 {
 				t.Fatal("chunked reads changed the content")
 			}
 		})
@@ -240,7 +241,7 @@ func TestReadProgress(t *testing.T) {
 			return copy(p, "ok"), io.EOF
 		})
 		content, err := parser.Read(r, parser.Limits{})
-		if err != nil || content.String() != "ok" {
+		if err != nil || content.Text() != "ok" {
 			t.Fatalf("temporary empty read: %v", err)
 		}
 	})
@@ -282,7 +283,7 @@ func TestReadOwnershipAndBound(t *testing.T) {
 			r := &trackedReader{reader: strings.NewReader(input)}
 			content, err := parser.Read(r, parser.Limits{MaxBytes: 3})
 			if len(input) == 3 {
-				if err != nil || content.String() != input {
+				if err != nil || content.Text() != input {
 					t.Fatalf("exact limit: %v", err)
 				}
 			} else if content != nil || !errors.Is(err, parser.ErrLimit) {
@@ -297,7 +298,7 @@ func TestReadOwnershipAndBound(t *testing.T) {
 
 func TestContentZeroValueAndIsolation(t *testing.T) {
 	var empty parser.Content
-	if empty.String() != "" || empty.Len() != 0 || empty.Digest() != sha256.Sum256(nil) {
+	if empty.Text() != "" || empty.Len() != 0 || empty.Digest() != sha256.Sum256(nil) {
 		t.Fatal("zero Content is not empty")
 	}
 	if line, ok := empty.Cursor().Next(); ok || line != (parser.Line{}) {
@@ -353,12 +354,12 @@ func TestIncrementalLineLimits(t *testing.T) {
 				if content != nil || !ok || !errors.Is(err, parser.ErrLimit) {
 					t.Fatalf("expected a structured line limit error, got %v", err)
 				}
-				if limitErr.Resource != "lines" || limitErr.Limit != tt.limit || limitErr.Observed != tt.limit+1 {
+				if limitErr.Resource != parser.ResourceLines || limitErr.Limit != tt.limit || limitErr.Observed != tt.limit+1 {
 					t.Fatalf("wrong observed limit: %+v", limitErr)
 				}
 				return
 			}
-			if err != nil || content.String() != tt.want {
+			if err != nil || content.Text() != tt.want {
 				t.Fatalf("incremental read failed: %v", err)
 			}
 			want := newContent(t, tt.want)
@@ -371,16 +372,16 @@ func TestIncrementalLineLimits(t *testing.T) {
 
 func TestLimitAndReadErrors(t *testing.T) {
 	errSource := errors.New("source failed")
-	for _, resource := range []string{"bytes", "lines"} {
-		t.Run(resource, func(t *testing.T) {
+	for _, resource := range []parser.Resource{parser.ResourceBytes, parser.ResourceLines} {
+		t.Run(string(resource), func(t *testing.T) {
 			calls := 0
 			limits := parser.Limits{MaxBytes: 1}
-			if resource == "lines" {
+			if resource == parser.ResourceLines {
 				limits = parser.Limits{MaxLines: 1}
 			}
 			r := readFunc(func(p []byte) (int, error) {
 				calls++
-				if resource == "lines" {
+				if resource == parser.ResourceLines {
 					return copy(p, "a\nb"), errSource
 				}
 				if calls == 1 {
@@ -568,5 +569,60 @@ func TestContentLineAtAndAll(t *testing.T) {
 	var empty parser.Content
 	if _, ok := empty.LineAt(0); ok || len(slices.Collect(empty.All())) != 0 {
 		t.Fatal("empty content produced a line")
+	}
+}
+
+func TestContentSpan(t *testing.T) {
+	const source = "one\r\ntwo\rthree\nfour"
+	content := newContent(t, source)
+	lines := content.Lines()
+	for first := 1; first <= content.Len(); first++ {
+		for last := first; last <= content.Len(); last++ {
+			var want strings.Builder
+			for _, line := range lines[first-1 : last] {
+				want.WriteString(line.Raw)
+			}
+			got, ok := content.Span(first, last)
+			if !ok || got != want.String() {
+				t.Fatalf("Span(%d, %d) = %q, %v; want %q", first, last, got, ok, want.String())
+			}
+		}
+	}
+	for _, interval := range [][2]int{{0, 1}, {2, 1}, {1, 5}, {5, 5}} {
+		if got, ok := content.Span(interval[0], interval[1]); ok || got != "" {
+			t.Fatalf("Span(%d, %d) accepted an invalid interval", interval[0], interval[1])
+		}
+	}
+	var empty parser.Content
+	if _, ok := empty.Span(1, 1); ok {
+		t.Fatal("empty Content returned a span")
+	}
+}
+
+func TestContentRedactsFormatting(t *testing.T) {
+	const secret = "enable secret hunter2"
+	content := newContent(t, "hostname edge\n"+secret+"\n")
+	wrapped := struct{ Config *parser.Content }{content}
+	var out strings.Builder
+	fmt.Fprintf(&out, "%v %+v %s %q %#v %v", content, content, content, content, content, wrapped)
+	text := slog.New(slog.NewTextHandler(&out, nil))
+	text.Info("loaded", "content", content)
+	json := slog.New(slog.NewJSONHandler(&out, nil))
+	json.Info("loaded", "content", content)
+	if strings.Contains(out.String(), "hunter2") {
+		t.Fatalf("formatting disclosed the source: %s", out.String())
+	}
+	digest := content.Digest()
+	for _, want := range []string{"lines: 2", fmt.Sprintf("%x", digest[:]), "content.lines=2", `"bytes":36`} {
+		if !strings.Contains(out.String(), want) {
+			t.Fatalf("summary lacks %q: %s", want, out.String())
+		}
+	}
+	var missing *parser.Content
+	if got := fmt.Sprint(missing); got != "<nil>" {
+		t.Fatalf("nil Content printed %q", got)
+	}
+	if got := missing.LogValue().String(); got != "<nil>" {
+		t.Fatalf("nil Content logged %q", got)
 	}
 }

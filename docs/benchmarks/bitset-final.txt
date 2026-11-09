@@ -1,0 +1,350 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  144062	       742.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1638724 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7385316	        16.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	43296540	         2.877 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1351585	        88.81 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  162996	       738.4 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    4664	     25963 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     451	    267023 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      30	   3785612 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	35518290	         3.259 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3162224	        37.89 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1372563	        87.13 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10068 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1166	    102377 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     663	    179553 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	71133915	         1.692 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4175854	        28.95 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  460490	       270.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11041 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1221	     97637 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     138	    865735 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28999803	         4.156 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2681121	        44.58 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  288105	       418.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    6696	     16851 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     782	    153666 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      93	   1264984 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73768572	         1.609 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  219908	       518.9 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9612	     12353 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  224569	       529.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1623809 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7404816	        16.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	46988966	         2.569 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1362631	        87.94 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  167996	       723.4 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    4936	     24078 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     463	    258764 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      30	   3732496 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	36594190	         3.438 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3195337	        37.37 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1377379	        86.86 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10066 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1182	    100881 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     669	    178374 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	71202544	         1.685 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4211012	        28.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  445075	       252.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     10969 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1232	     97399 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     138	    865576 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28870735	         4.138 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2709220	        44.24 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  291052	       416.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    6878	     16814 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     772	    152812 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      94	   1265206 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	74582431	         1.617 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  231565	       517.3 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9676	     12330 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  226998	       531.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1626203 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7380432	        16.24 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	46476355	         2.729 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1365010	        87.99 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  170318	       715.3 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    5151	     23761 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     475	    256718 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      32	   3598777 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	30538562	         3.725 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3150315	        37.86 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1389292	        86.84 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10547 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1128	    105347 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     621	    191132 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	70424270	         1.688 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4282903	        27.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  450091	       253.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11082 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1220	     98143 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     138	    869470 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28647309	         4.162 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2695442	        44.45 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  287386	       416.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    7173	     16897 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     788	    152456 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      92	   1267347 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73846153	         1.624 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  220285	       522.5 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9705	     12387 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  225051	       533.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1631505 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7381756	        16.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	43271826	         2.993 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1365175	        87.65 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  170874	       709.3 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    4969	     23770 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     462	    250031 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      31	   3606437 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	32445217	         3.881 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3170475	        38.06 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1413835	        84.81 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10501 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1119	    103920 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     658	    179549 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	70911507	         1.693 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4282731	        27.88 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  431589	       270.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11011 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1225	     98030 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     136	    872809 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28792222	         4.154 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2682853	        44.64 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  288567	       415.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    7104	     16658 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     768	    153060 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      92	   1266113 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73392654	         1.626 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  225729	       520.6 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9122	     12481 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  224568	       532.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1630243 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7400821	        16.22 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	46204190	         2.690 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1354042	        88.44 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  169467	       715.0 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    5091	     24276 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     457	    260357 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      30	   3750024 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	36309546	         3.441 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3231144	        37.43 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1371574	        87.01 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10575 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1108	    105800 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     625	    190903 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	71274778	         1.697 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4253772	        28.35 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  439627	       273.9 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11062 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1218	     98247 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     135	    876301 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28674115	         4.175 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2694524	        44.70 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  287272	       418.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    6919	     17010 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     777	    155317 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      94	   1268056 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73306706	         1.631 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  216498	       531.1 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9664	     12429 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  222014	       532.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1631867 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7355851	        16.25 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	39722498	         2.882 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1342789	        89.73 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  165772	       733.6 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    4810	     24404 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     470	    253884 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      30	   3771485 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	34191686	         3.551 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3116113	        38.90 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1367770	        87.93 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10365 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1096	    106680 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     620	    193606 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	70534628	         1.695 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4291736	        27.79 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  450879	       260.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11100 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1215	     98318 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     136	    876306 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28809794	         4.196 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2661904	        45.07 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  284250	       417.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    6894	     16885 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     771	    155816 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      92	   1272339 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	71303026	         1.629 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  226318	       526.7 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9666	     12412 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  223179	       532.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      70	   1637158 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7343566	        16.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	42455964	         2.809 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1352680	        88.34 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  170374	       715.8 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    4996	     24087 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     482	    252727 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      31	   3692149 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	32137840	         3.672 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3164038	        38.03 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1372122	        87.66 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10202 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1144	    103993 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     660	    181050 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	71077750	         1.696 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4233121	        28.35 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  436462	       270.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11085 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1207	     99105 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     135	    879852 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28474249	         4.187 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2673669	        44.94 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  289124	       418.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    7131	     17078 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     766	    155339 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      92	   1280628 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73310422	         1.637 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  236287	       531.9 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9645	     12481 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  226242	       531.9 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1629429 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7384141	        16.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	46787419	         2.716 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1365799	        87.73 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  169304	       714.1 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    5006	     23950 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     475	    252304 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      31	   3642624 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	35108680	         3.723 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3131632	        39.39 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1379208	        87.04 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10275 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1138	    106347 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     669	    178499 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	70667881	         1.698 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4295038	        27.74 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  466071	       258.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11105 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1219	     98896 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     136	    874891 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28483266	         4.186 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2664825	        44.91 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  288342	       418.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    7105	     17040 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     777	    155367 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      92	   1274099 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73144729	         1.628 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  223004	       525.6 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9616	     12411 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  224438	       532.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1635555 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7352752	        16.25 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	45892032	         2.740 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1355270	        88.50 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  166264	       725.2 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    4928	     24048 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     470	    256829 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      30	   3628010 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	27519255	         3.971 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3162871	        38.30 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1388518	        86.80 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     10803 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1162	    105082 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     622	    191786 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	69952164	         1.699 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4272831	        28.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  438122	       272.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11080 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1210	     98490 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     135	    880171 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28873624	         4.165 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2658382	        45.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  286063	       417.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    6982	     17127 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     784	    154124 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      92	   1276684 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73521888	         1.633 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  219939	       542.1 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9571	     12454 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/gatework/parser
+cpu: Apple M5
+BenchmarkCursorNext/small         	  224208	       533.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/short_lines   	      73	   1643214 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCursorNext/long_line     	 7339186	        16.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/rare 	42818911	         2.799 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedLines/small/sparse         	 1349440	        88.69 ns/op	     352 B/op	       1 allocs/op
+BenchmarkUnparsedLines/small/dense          	  168892	       718.0 ns/op	    3456 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/rare     	    5134	     24118 ns/op	  114688 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/sparse   	     469	    279967 ns/op	 1122304 B/op	       1 allocs/op
+BenchmarkUnparsedLines/short_lines/dense    	      31	   3630180 ns/op	10084352 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/rare            	32377372	         3.578 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsedText/small/sparse          	 3144351	        38.75 ns/op	      96 B/op	       1 allocs/op
+BenchmarkUnparsedText/small/dense           	 1357786	        88.34 ns/op	    1024 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/rare      	   10000	     11101 ns/op	   40960 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/sparse    	    1130	    106173 ns/op	  344064 B/op	       1 allocs/op
+BenchmarkUnparsedText/short_lines/dense     	     662	    181415 ns/op	 3063808 B/op	       1 allocs/op
+BenchmarkUnparsed/small/rare                	71169099	         1.703 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/sparse              	 4159954	        28.25 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/small/dense               	  442674	       252.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/rare          	   10000	     11110 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/sparse        	    1220	     98708 ns/op	       0 B/op	       0 allocs/op
+BenchmarkUnparsed/short_lines/dense         	     138	    868683 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/rare            	28964811	         4.170 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/sparse          	 2649228	        44.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/small/dense           	  286470	       419.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/rare      	    6979	     16995 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/sparse    	     770	    155869 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNextUnparsed/short_lines/dense     	      93	   1273716 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/small                	73209790	         1.629 ns/op	       0 B/op	       0 allocs/op
+BenchmarkContentCursor/short_lines          	  227338	       532.2 ns/op	   27264 B/op	       1 allocs/op
+BenchmarkSetParsedRange                     	    9708	     12404 ns/op	       0 B/op	       0 allocs/op
+PASS

@@ -14,6 +14,10 @@ One physical line of a Content: its one-based number, byte interval, and raw
 bytes with and without the line ending.
 _Avoid_: row, record
 
+**Span**:
+The exact source bytes of an inclusive interval of consecutive Lines.
+_Avoid_: block, section (those are caller syntax)
+
 **Ingestion**:
 Turning source bytes into a Content: enforcing Limits, partitioning lines and
 computing the Digest, all-or-nothing.
@@ -37,6 +41,11 @@ _Avoid_: iterator, scanner, reader
 A per-line, per-Cursor mark that a caller successfully parsed that line.
 Reading never sets it.
 _Avoid_: consumed, handled
+
+**Position**:
+The zero-based index of the next Line a Cursor reads, from 0 to the line
+count, which is EOF. Seek sets it directly.
+_Avoid_: offset (offsets are bytes), index
 
 **Checkpoint**:
 A saved Cursor position, restorable only on the Cursor that made it; it does

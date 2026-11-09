@@ -142,3 +142,38 @@ fuzz 将游标操作、两字节行号和标记分别生成，并比较随机分
 以及 `Read` 为 SHA-256 复制字符串分块所用的缓冲区。该缓冲区按实际分块大小几何增长，
 上限 32 KiB，不随原文整体增长。首轮测量中缓冲区固定为 32 KiB，`New / small` 的
 B/op 增至 33.3 KiB；该实现未发布，已改为按需分配后重新采样，上表为重新采样结果。
+
+## v0.2.0 解析标记位图
+
+2026-11-09，游标的解析标记由 `[]bool` 改为 `[]uint64` 位图：每行 1 bit，最后一个字的
+填充位恒为已解析；`NextUnparsed` 与迭代器整字跳过全已解析的字，`UnparsedText`
+按连续未解析行的区间整段写入，`SetParsedRange` 按字批量设置并用 popcount 维护
+`UnparsedCount`。环境与 10 轮交替方法同上，仅采集游标相关基准
+（`-test.bench='Cursor|Unparsed|SetParsedRange'`）。新增 `rare` 密度：仅每第 100 行
+未解析，对应多轮扫描后期的典型状态。
+
+基线（同一 API，`[]bool` 加计数器）二进制 SHA-256：
+`0902cde0699d79b2996cad35e2921a4d851538f7be15a2ef271554f80524b346`。
+最终二进制 SHA-256：
+`05ecffa2c9d7ebc94ce28f386970511113c5f026122166293cd0167d8cc98d7a`。
+原始数据见 [基线样本](benchmarks/bitset-baseline.txt)、
+[最终样本](benchmarks/bitset-final.txt) 和 [benchstat 对照](benchmarks/bitset-comparison.txt)。
+
+| 操作（`short_lines`，20 万行） | 耗时：基线 → 最终 |
+|---|---|
+| `NextUnparsed / rare` | 127.8 → 17.0 µs，减少 86.74% |
+| `NextUnparsed / sparse` | 286.9 → 154.7 µs，减少 46.07% |
+| `NextUnparsed / dense` | 1.231 → 1.270 ms，增加 3.15% |
+| `UnparsedText / rare` | 128.7 → 10.4 µs，减少 91.89% |
+| `UnparsedText / dense` | 961.9 → 181.2 µs，减少 81.16% |
+| `Unparsed / rare` | 65.7 → 11.1 µs，减少 83.14% |
+| `Unparsed / dense` | 829.8 → 873.9 µs，增加 5.31% |
+| `SetParsedRange`（全量置位再清除） | 175.7 → 12.4 µs，减少 92.94% |
+| `Content.Cursor()` | 3.39 → 0.53 µs；200.00 → 26.62 KiB |
+
+预设的采纳标准是"其余基准退化不超过 5%"。`Unparsed` 迭代器在 `dense`（90% 行未解析）
+下未达标：`short_lines` 增加 5.31%，`small` 增加 13.54%（约 30 ns/64 行）。原因是
+每个命中行都要定位比特并重新读取当前字，以保证循环中修改的标记对未访问行生效。
+曾尝试把位循环直接写入 `Unparsed`，无显著改善，未保留。考虑到多轮扫描的热路径是
+后期大部分行已解析的 `rare`/`sparse` 状态，经确认接受该例外并采用位图。
+`CursorNext` 与 `UnparsedLines` 的 dense 情形无显著或不足 2% 的差异。

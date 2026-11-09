@@ -106,3 +106,45 @@ func ExampleCursor_SetParsedRange() {
 	// 4: pending
 	// position: 1
 }
+
+func ExampleCursor_Seek() {
+	content, err := parser.New("hostname edge\nbanner motd ^\nwelcome\n^\nntp server 192.0.2.1\n", parser.Limits{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// Locate a construct in the whole source, then continue line by line there.
+	line, ok := content.LineAt(strings.Index(content.Text(), "banner"))
+	if !ok {
+		return
+	}
+	cursor := content.Cursor()
+	if err := cursor.Seek(line.Number - 1); err != nil {
+		fmt.Println(err)
+		return
+	}
+	next, _ := cursor.Next()
+	fmt.Printf("%d: %s\n", next.Number, next.Text)
+	// Output: 2: banner motd ^
+}
+
+func ExampleContent_Span() {
+	content, err := parser.New("hostname edge\nbanner motd ^\nwelcome\r\n^\nntp server 192.0.2.1\n", parser.Limits{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	cursor := content.Cursor()
+	// Keep a multi-line block byte for byte, then mark it parsed as one unit.
+	if block, ok := content.Span(2, 4); ok {
+		fmt.Printf("%q\n", block)
+	}
+	if err := cursor.SetParsedRange(2, 4, true); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("unparsed:", cursor.UnparsedCount())
+	// Output:
+	// "banner motd ^\nwelcome\r\n^\n"
+	// unparsed: 2
+}

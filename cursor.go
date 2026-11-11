@@ -75,6 +75,142 @@ func (c *Cursor) NextUnparsed() (Line, bool) {
 	return c.content.Line(i + 1)
 }
 
+// Position returns the zero-based index of the next physical line.
+// At EOF it equals the source's line count.
+func (c *Cursor) Position() int { return c.position }
+
+// Seek moves to a zero-based position in [0, Len], the same domain as
+// [Cursor.Position]; Len is EOF. Seeking to line.Number-1 makes line the next
+// one read, for example after [Content.LineAt]. An invalid position returns
+// ErrLineRange without changing position. Parsed flags are unchanged.
+func (c *Cursor) Seek(position int) error {
+	if position < 0 || position > c.lineCount() {
+		return fmt.Errorf("%w: position %d", ErrLineRange, position)
+	}
+	c.position = position
+	return nil
+}
+
+// Content returns the source this cursor reads, or nil for the zero Cursor.
+func (c *Cursor) Content() *Content { return c.content }
+
+// Prev moves back one physical line, returning false if already at the head.
+// It does not search for the previous unparsed line or undo any parsed flag.
+func (c *Cursor) Prev() bool {
+	if c.position == 0 {
+		return false
+	}
+	c.position--
+	return true
+}
+
+// Rewind moves to the head, preserving all parsed flags.
+func (c *Cursor) Rewind() { c.position = 0 }
+
+// Checkpoint saves the current read position.
+func (c *Cursor) Checkpoint() Checkpoint {
+	return Checkpoint{owner: c, position: c.position}
+}
+
+// Restore restores a position saved by this cursor without changing parsed
+// flags. An invalid checkpoint returns ErrCheckpoint without changing position.
+func (c *Cursor) Restore(checkpoint Checkpoint) error {
+	if checkpoint.owner != c {
+		return ErrCheckpoint
+	}
+	if checkpoint.position < 0 || checkpoint.position > c.lineCount() {
+		return ErrCheckpoint
+	}
+	c.position = checkpoint.position
+	return nil
+}
+
+// SetParsed changes the flag for a one-based line number. Repeating a value is
+// harmless; false makes the line available to a later NextUnparsed scan.
+// The read position is unchanged, including when the number is invalid.
+func (c *Cursor) SetParsed(number int, parsed bool) error {
+	if number < 1 || number > c.lineCount() {
+		return fmt.Errorf("%w: %d", ErrLineRange, number)
+	}
+	c.setRange(number-1, number, parsed)
+	return nil
+}
+
+// SetParsedRange sets the flags in the inclusive, one-based [first, last]
+// interval. It validates the entire interval before changing any flags.
+// An empty, reversed or out-of-bounds interval returns ErrLineRange. Position is
+// unchanged, and the cursor's single-goroutine ownership still applies.
+func (c *Cursor) SetParsedRange(first, last int, parsed bool) error {
+	if first < 1 || last < first || last > c.lineCount() {
+		return fmt.Errorf("%w: range [%d, %d]", ErrLineRange, first, last)
+	}
+	c.setRange(first-1, last, parsed)
+	return nil
+}
+
+// Checkpoint is a saved position belonging to one Cursor. Its zero value is
+// invalid. It contains no snapshot of parsed flags and can be restored repeatedly.
+type Checkpoint struct {
+	owner    *Cursor
+	position int
+}
+
+// IsParsed reports the flag for a one-based line number, or ErrLineRange if
+// invalid.
+func (c *Cursor) IsParsed(number int) (bool, error) {
+	if number < 1 || number > c.lineCount() {
+		return false, fmt.Errorf("%w: %d", ErrLineRange, number)
+	}
+	return c.isParsed(number - 1), nil
+}
+
+// UnparsedCount returns the number of unparsed lines in constant time. It is
+// zero when every line has been parsed.
+func (c *Cursor) UnparsedCount() int { return c.unparsed }
+
+// Unparsed returns an iterator over unparsed lines, independent of position.
+// Each traversal examines the current flags in source order. Flag changes in
+// the loop affect lines not yet visited; earlier lines are not revisited until
+// the next traversal. The iterator never changes position or flags itself.
+func (c *Cursor) Unparsed() iter.Seq[Line] {
+	return func(yield func(Line) bool) {
+		for i := range c.unparsedIndexes() {
+			line, _ := c.content.Line(i + 1)
+			if !yield(line) {
+				return
+			}
+		}
+	}
+}
+
+// UnparsedLines returns a new slice of all unparsed lines in source order,
+// independent of the read position. It includes unparsed empty lines.
+func (c *Cursor) UnparsedLines() []Line {
+	lines := make([]Line, 0, c.unparsed)
+	for i := range c.unparsedIndexes() {
+		line, _ := c.content.Line(i + 1)
+		lines = append(lines, line)
+	}
+	return lines
+}
+
+// UnparsedText joins the Raw bytes of every unparsed line in source order.
+// It neither changes position nor introduces or normalizes line endings.
+func (c *Cursor) UnparsedText() string {
+	size := 0
+	for lo, hi := range c.unparsedRuns() {
+		start, _ := c.content.bounds(lo)
+		size += c.content.ends[hi-1] - start
+	}
+	var text strings.Builder
+	text.Grow(size)
+	for lo, hi := range c.unparsedRuns() {
+		start, _ := c.content.bounds(lo)
+		text.WriteString(c.content.text[start:c.content.ends[hi-1]])
+	}
+	return text.String()
+}
+
 // lineCount returns the number of lines, which is zero for the zero Cursor.
 func (c *Cursor) lineCount() int {
 	if c.content == nil {
@@ -121,99 +257,6 @@ func (c *Cursor) setRange(lo, hi int, parsed bool) {
 	}
 }
 
-// Position returns the zero-based index of the next physical line.
-// At EOF it equals the source's line count.
-func (c *Cursor) Position() int { return c.position }
-
-// Seek moves to a zero-based position in [0, Len], the same domain as
-// [Cursor.Position]; Len is EOF. Seeking to line.Number-1 makes line the next
-// one read, for example after [Content.LineAt]. An invalid position returns
-// ErrLineRange without changing position. Parsed flags are unchanged.
-func (c *Cursor) Seek(position int) error {
-	if position < 0 || position > c.lineCount() {
-		return fmt.Errorf("%w: position %d", ErrLineRange, position)
-	}
-	c.position = position
-	return nil
-}
-
-// Content returns the source this cursor reads, or nil for the zero Cursor.
-func (c *Cursor) Content() *Content { return c.content }
-
-// Prev moves back one physical line, returning false if already at the head.
-// It does not search for the previous unparsed line or undo any parsed flag.
-func (c *Cursor) Prev() bool {
-	if c.position == 0 {
-		return false
-	}
-	c.position--
-	return true
-}
-
-// Rewind moves to the head, preserving all parsed flags.
-func (c *Cursor) Rewind() { c.position = 0 }
-
-// Checkpoint is a saved position belonging to one Cursor. Its zero value is
-// invalid. It contains no snapshot of parsed flags and can be restored repeatedly.
-type Checkpoint struct {
-	owner    *Cursor
-	position int
-}
-
-// Checkpoint saves the current read position.
-func (c *Cursor) Checkpoint() Checkpoint {
-	return Checkpoint{owner: c, position: c.position}
-}
-
-// Restore restores a position saved by this cursor without changing parsed
-// flags. An invalid checkpoint returns ErrCheckpoint without changing position.
-func (c *Cursor) Restore(checkpoint Checkpoint) error {
-	if checkpoint.owner != c {
-		return ErrCheckpoint
-	}
-	if checkpoint.position < 0 || checkpoint.position > c.lineCount() {
-		return ErrCheckpoint
-	}
-	c.position = checkpoint.position
-	return nil
-}
-
-// SetParsed changes the flag for a one-based line number. Repeating a value is
-// harmless; false makes the line available to a later NextUnparsed scan.
-// The read position is unchanged, including when the number is invalid.
-func (c *Cursor) SetParsed(number int, parsed bool) error {
-	if number < 1 || number > c.lineCount() {
-		return fmt.Errorf("%w: %d", ErrLineRange, number)
-	}
-	c.setRange(number-1, number, parsed)
-	return nil
-}
-
-// SetParsedRange sets the flags in the inclusive, one-based [first, last]
-// interval. It validates the entire interval before changing any flags.
-// An empty, reversed or out-of-bounds interval returns ErrLineRange. Position is
-// unchanged, and the cursor's single-goroutine ownership still applies.
-func (c *Cursor) SetParsedRange(first, last int, parsed bool) error {
-	if first < 1 || last < first || last > c.lineCount() {
-		return fmt.Errorf("%w: range [%d, %d]", ErrLineRange, first, last)
-	}
-	c.setRange(first-1, last, parsed)
-	return nil
-}
-
-// IsParsed reports the flag for a one-based line number, or ErrLineRange if
-// invalid.
-func (c *Cursor) IsParsed(number int) (bool, error) {
-	if number < 1 || number > c.lineCount() {
-		return false, fmt.Errorf("%w: %d", ErrLineRange, number)
-	}
-	return c.isParsed(number - 1), nil
-}
-
-// UnparsedCount returns the number of unparsed lines in constant time. It is
-// zero when every line has been parsed.
-func (c *Cursor) UnparsedCount() int { return c.unparsed }
-
 // unparsedIndexes yields the zero-based index of every unparsed line in
 // order, visiting the clear bits of each flag word. The current word is read
 // again after each yield, so flags changed by the consumer affect every index
@@ -232,32 +275,6 @@ func (c *Cursor) unparsedIndexes() iter.Seq[int] {
 			}
 		}
 	}
-}
-
-// Unparsed returns an iterator over unparsed lines, independent of position.
-// Each traversal examines the current flags in source order. Flag changes in
-// the loop affect lines not yet visited; earlier lines are not revisited until
-// the next traversal. The iterator never changes position or flags itself.
-func (c *Cursor) Unparsed() iter.Seq[Line] {
-	return func(yield func(Line) bool) {
-		for i := range c.unparsedIndexes() {
-			line, _ := c.content.Line(i + 1)
-			if !yield(line) {
-				return
-			}
-		}
-	}
-}
-
-// UnparsedLines returns a new slice of all unparsed lines in source order,
-// independent of the read position. It includes unparsed empty lines.
-func (c *Cursor) UnparsedLines() []Line {
-	lines := make([]Line, 0, c.unparsed)
-	for i := range c.unparsedIndexes() {
-		line, _ := c.content.Line(i + 1)
-		lines = append(lines, line)
-	}
-	return lines
 }
 
 // unparsedRuns yields maximal half-open index intervals [lo, hi) of
@@ -285,21 +302,4 @@ func (c *Cursor) unparsedRuns() iter.Seq2[int, int] {
 			yield(lo, hi)
 		}
 	}
-}
-
-// UnparsedText joins the Raw bytes of every unparsed line in source order.
-// It neither changes position nor introduces or normalizes line endings.
-func (c *Cursor) UnparsedText() string {
-	size := 0
-	for lo, hi := range c.unparsedRuns() {
-		start, _ := c.content.bounds(lo)
-		size += c.content.ends[hi-1] - start
-	}
-	var text strings.Builder
-	text.Grow(size)
-	for lo, hi := range c.unparsedRuns() {
-		start, _ := c.content.bounds(lo)
-		text.WriteString(c.content.text[start:c.content.ends[hi-1]])
-	}
-	return text.String()
 }

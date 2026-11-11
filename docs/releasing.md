@@ -3,9 +3,9 @@
 模块通过公开仓库 `gatework/parser` 的 SemVer tag 发布。版本格式为 `vMAJOR.MINOR.PATCH`，
 当前要求 Go 1.26+。模块不包含可执行程序，Release 附件为源码包、提交号和校验和。
 
-1. 更新 `VERSION`、`CHANGELOG.md` 和 README 安装版本，提交并推送 `main`。
-2. 等待该提交的 CI 成功。CI 在 Go 1.26.0、1.27.1 上运行 race、vet、测试和构建，
-   执行 fuzz、lint、漏洞与 workflow 检查，然后归档被验证的 Git 提交。
+1. 更新 `VERSION`、`CHANGELOG.md` 和 README 安装版本，通过 PR 合并到 `main`。
+2. 等待该提交的 CI 成功。CI 在 Go 1.26.x、1.27.x 的最新补丁版本上运行 `make check`，
+   执行 fuzz 与 workflow 检查，然后归档被验证的 Git 提交。
 3. 在同一提交创建与 `VERSION` 相符的 tag，并推送。例如首版：
 
    ```sh

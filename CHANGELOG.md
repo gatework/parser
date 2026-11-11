@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.1
+
+2026-11-11
+
+- Adopt the gatework Go engineering standard 1.0.2 and the shared `make check`
+  gate, including package import boundaries, race tests and vulnerability checks.
+- Pass construction contexts explicitly through content ingestion; public APIs,
+  lossless source handling, limits and cancellation behavior are unchanged.
+
 ## v0.2.0
 
 2026-11-09

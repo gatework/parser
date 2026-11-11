@@ -26,6 +26,7 @@ func newContent(t *testing.T, text string) *parser.Content {
 }
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name  string
 		input string
@@ -170,6 +171,7 @@ func TestDefaultLimits(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
+	t.Parallel()
 	const text = " \t中文\r\n\xff\nlast\r"
 	tests := []struct {
 		name string
@@ -198,6 +200,7 @@ type readFunc func([]byte) (int, error)
 func (f readFunc) Read(p []byte) (int, error) { return f(p) }
 
 func TestReadFailures(t *testing.T) {
+	t.Parallel()
 	errSource := errors.New("source failed")
 	tests := []struct {
 		name string

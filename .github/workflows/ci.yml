@@ -33,21 +33,15 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
           cache: false
-      - name: Verify source and module
-        run: |
-          test -z "$(gofmt -l .)"
-          go mod tidy
-          git diff --exit-code
-          go vet ./...
-          go test -race -shuffle=on -count=1 -timeout=2m ./...
-          go build ./...
+      - name: Check (STANDARD.md MOD-5)
+        run: make check
       - name: Fuzz indexing and cursors
         if: matrix.go == '1.27.1'
         run: make fuzz
 
-  quality:
+  workflows:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -56,17 +50,11 @@ jobs:
         with:
           go-version: "1.27.1"
           cache: false
-      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
-        with:
-          version: v2.15.0
-          skip-cache: true
-      - name: Check reachable vulnerabilities
-        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
       - name: Validate workflows
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
 
   package:
-    needs: [test, quality]
+    needs: [test, workflows]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5

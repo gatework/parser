@@ -224,6 +224,7 @@ func TestCursorZeroValue(t *testing.T) {
 }
 
 func TestContentConcurrentCursors(t *testing.T) {
+	t.Parallel()
 	const source = "one\ntwo\nthree\nfour\n"
 	content := newContent(t, source)
 	digest := content.Digest()

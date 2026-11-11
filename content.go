@@ -51,10 +51,10 @@ func NewWithContext(ctx context.Context, text string, limits Limits) (*Content, 
 	if err != nil {
 		return nil, err
 	}
-	if err := builder.write(text); err != nil {
+	if err := builder.write(ctx, text); err != nil {
 		return nil, joinFailure(err, ctx.Err())
 	}
-	return builder.finish(text)
+	return builder.finish(ctx, text)
 }
 
 // Read reads and indexes r through EOF. It reads at most
@@ -101,7 +101,7 @@ func ReadWithContext(ctx context.Context, r io.Reader, limits Limits) (*Content,
 			text.Write(buf[:n])
 			// Ingest the builder's owned bytes without copying the read buffer
 			// into a temporary string for each chunk.
-			if err := builder.write(text.String()[start:]); err != nil {
+			if err := builder.write(ctx, text.String()[start:]); err != nil {
 				return nil, joinFailure(err, failure, ctx.Err())
 			}
 			emptyReads = 0
@@ -112,7 +112,7 @@ func ReadWithContext(ctx context.Context, r io.Reader, limits Limits) (*Content,
 			return nil, joinFailure(failure, ctx.Err())
 		}
 		if readErr == io.EOF {
-			return builder.finish(text.String())
+			return builder.finish(ctx, text.String())
 		}
 		if n == 0 {
 			emptyReads++
@@ -179,15 +179,6 @@ func (c *Content) LogValue() slog.Value {
 
 // Len returns the number of physical lines.
 func (c *Content) Len() int { return len(c.ends) }
-
-// bounds returns the byte interval of the line at zero-based index i, which
-// must be in range.
-func (c *Content) bounds(i int) (start, end int) {
-	if i > 0 {
-		start = c.ends[i-1]
-	}
-	return start, c.ends[i]
-}
 
 // Line returns the one-based line number, or false when number is out of range.
 func (c *Content) Line(number int) (Line, bool) {
@@ -256,4 +247,13 @@ func (c *Content) Digest() [sha256.Size]byte {
 // Cursor returns a new cursor at the head with every line unparsed.
 func (c *Content) Cursor() *Cursor {
 	return newCursor(c)
+}
+
+// bounds returns the byte interval of the line at zero-based index i, which
+// must be in range.
+func (c *Content) bounds(i int) (start, end int) {
+	if i > 0 {
+		start = c.ends[i-1]
+	}
+	return start, c.ends[i]
 }

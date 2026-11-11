@@ -16,7 +16,6 @@ const scanChunk = 32 << 10
 // at the start of the next piece extends that ending instead of starting
 // another line.
 type contentBuilder struct {
-	ctx     context.Context
 	limits  Limits
 	ends    []int
 	offset  int
@@ -36,7 +35,7 @@ func newContentBuilder(ctx context.Context, limits Limits) (contentBuilder, erro
 	if err != nil {
 		return contentBuilder{}, err
 	}
-	return contentBuilder{ctx: ctx, limits: limits, ends: []int{}, digest: sha256.New()}, nil
+	return contentBuilder{limits: limits, ends: []int{}, digest: sha256.New()}, nil
 }
 
 // remaining returns the number of bytes still accepted by the byte limit.
@@ -44,13 +43,14 @@ func (b *contentBuilder) remaining() int { return b.limits.MaxBytes - b.offset }
 
 // write ingests the next contiguous piece of the source. The byte limit is
 // checked before anything else so that a concurrently observed cancellation
-// cannot hide it; cancellation is then checked before every scanChunk step.
-func (b *contentBuilder) write(piece string) error {
+// cannot hide it; cancellation of ctx is then checked before every scanChunk
+// step.
+func (b *contentBuilder) write(ctx context.Context, piece string) error {
 	if len(piece) > b.remaining() {
 		return &LimitError{Resource: ResourceBytes, Limit: b.limits.MaxBytes, Observed: b.offset + len(piece)}
 	}
 	for len(piece) > 0 {
-		if err := b.ctx.Err(); err != nil {
+		if err := ctx.Err(); err != nil {
 			return err
 		}
 		step := piece[:min(len(piece), scanChunk)]
@@ -112,7 +112,7 @@ func (b *contentBuilder) lineLimitError() error {
 // finish closes the final unterminated line and returns the Content for text,
 // which must be exactly the bytes written. Cancellation is checked last so
 // that a context cancelled during ingestion never yields a Content.
-func (b *contentBuilder) finish(text string) (*Content, error) {
+func (b *contentBuilder) finish(ctx context.Context, text string) (*Content, error) {
 	last := 0
 	if len(b.ends) > 0 {
 		last = b.ends[len(b.ends)-1]
@@ -122,7 +122,7 @@ func (b *contentBuilder) finish(text string) (*Content, error) {
 	}
 	content := &Content{text: text, ends: b.ends}
 	b.digest.Sum(content.digest[:0])
-	if err := b.ctx.Err(); err != nil {
+	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	return content, nil

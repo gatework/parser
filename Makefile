@@ -1,9 +1,9 @@
-.PHONY: check fuzz
+STANDARDS_DIR ?= $(wildcard $(CURDIR)/../go-standards)
+include standard.mk
 
-check:
-	GOWORK=off go test -race ./...
-	GOWORK=off go vet ./...
+.PHONY: fuzz
 
+# Content and cursor indexing must survive arbitrary input (TST-4).
 fuzz:
-	GOWORK=off go test -run='^$$' -fuzz='^FuzzContent$$' -fuzztime=10s -parallel=4 .
-	GOWORK=off go test -run='^$$' -fuzz='^FuzzCursor$$' -fuzztime=10s -parallel=4 .
+	$(GO) test -run='^$$' -fuzz='^FuzzContent$$' -fuzztime=10s -parallel=4 .
+	$(GO) test -run='^$$' -fuzz='^FuzzCursor$$' -fuzztime=10s -parallel=4 .

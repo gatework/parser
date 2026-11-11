@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: ["1.26.0", "1.27.1"]
+        go: ["1.26.x", "1.27.x"] # STANDARD.md MOD-1
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -36,7 +36,7 @@ jobs:
       - name: Check (STANDARD.md MOD-5)
         run: make check
       - name: Fuzz indexing and cursors
-        if: matrix.go == '1.27.1'
+        if: matrix.go == '1.27.x'
         run: make fuzz
 
   workflows:
@@ -48,7 +48,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.x"
           cache: false
       - name: Validate workflows
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12

@@ -8,7 +8,7 @@
 ## 安装
 
 ```sh
-go get github.com/gatework/parser@v0.2.1
+go get github.com/gatework/parser@v0.2.2
 ```
 
 公开模块，无第三方依赖。版本变更见 [CHANGELOG.md](CHANGELOG.md)，发布步骤见
@@ -203,3 +203,7 @@ make fuzz
 `fuzz` 分别对随机分块读取、字节分行与游标操作运行 10 秒 fuzz。测试使用合成文本，
 无设备或数据库依赖。性能工作负载、原始结果与比较方法见
 [性能记录](docs/performance.md)。
+
+## License
+
+MIT. See [LICENSE](LICENSE).

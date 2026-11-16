@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.2
+
+2026-11-15
+
+- Add the MIT license to source distributions and the published Go module.
+- Public APIs and parsing behavior are unchanged.
+
 ## v0.2.1
 
 2026-11-11
